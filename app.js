@@ -1,174 +1,311 @@
-// Firebase モジュール読み込み
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { 
-  getFirestore, collection, addDoc, deleteDoc, doc, updateDoc, 
-  onSnapshot, query, orderBy 
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-/* -------------------- パスワード保護 -------------------- */
-window.onload = function(){
-  const password = "54315";
-  const userPass = prompt("サイト閲覧にはパスワードが必要です:");
-  if(userPass !== password){
-    alert("パスワードが間違っています。サイトを閉じます。");
-    document.body.innerHTML = "<h2 style='text-align:center;margin-top:50px;color:red;'>パスワードが違います</h2>";
-    return;
-  }
+import {
+getFirestore,
+collection,
+addDoc,
+deleteDoc,
+doc,
+updateDoc,
+onSnapshot,
+query,
+orderBy
+}
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+/* パスワード */
+
+window.onload=function(){
+
+const password="54315";
+
+const userPass=prompt("サイト閲覧にはパスワードが必要です:");
+
+if(userPass!==password){
+
+document.body.innerHTML="<h2 style='text-align:center;margin-top:50px;color:red;'>パスワードが違います</h2>";
+
 }
 
-/* -------------------- Firebase 初期化 -------------------- */
-const firebaseConfig = {
-  apiKey: "AIzaSyBONAWg79Un6Tag0vPP0PB0UiqJLL6KvtM",
-  authDomain: "shareboard-ee031.firebaseapp.com",
-  projectId: "shareboard-ee031",
-  storageBucket: "shareboard-ee031.firebasestorage.app",
-  messagingSenderId: "972674645025",
-  appId: "1:972674645025:web:468e8a52a964e4a53e3760"
+}
+
+/* Firebase */
+
+const firebaseConfig={
+
+apiKey:"AIzaSyBONAWg79Un6Tag0vPP0PB0UiqJLL6KvtM",
+
+authDomain:"shareboard-ee031.firebaseapp.com",
+
+projectId:"shareboard-ee031",
+
+storageBucket:"shareboard-ee031.firebasestorage.app",
+
+messagingSenderId:"972674645025",
+
+appId:"1:972674645025:web:468e8a52a964e4a53e3760"
+
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const videosRef = collection(db,"videos");
+const app=initializeApp(firebaseConfig);
 
-let currentDate = null;
-let sortableInitialized = false;
+const db=getFirestore(app);
 
-/* -------------------- 動画投稿 -------------------- */
-window.addVideo = async function(){
-  const url = document.getElementById("url").value;
-  const comment = document.getElementById("comment").value;
-  const date = document.getElementById("date").value;
+const videosRef=collection(db,"videos");
 
-  if(!url || !date){
-    alert("日付とURLを入力してください");
-    return;
-  }
+let currentDate=null;
 
-  await addDoc(videosRef,{ url, comment, date, order:0 });
+let calendarYear=new Date().getFullYear();
 
-  // フォームをクリア
-  document.getElementById("url").value="";
-  document.getElementById("comment").value="";
+let calendarMonth=new Date().getMonth();
+
+let lastSnapshot=null;
+
+/* 投稿 */
+
+window.addVideo=async function(){
+
+const url=document.getElementById("url").value;
+
+const comment=document.getElementById("comment").value;
+
+const date=document.getElementById("date").value;
+
+if(!url||!date){
+
+alert("日付とURLを入力してください");
+
+return;
+
 }
 
-/* -------------------- コメント編集・保存 -------------------- */
-window.editComment = function(id){
-  const commentDiv = document.getElementById("comment-"+id);
-  const text = commentDiv.innerText;
-  commentDiv.innerHTML = `
-    <input type="text" id="editInput-${id}" value="${text}">
-    <button class="save" onclick="saveComment('${id}')">保存</button>
-  `;
+await addDoc(videosRef,{url,comment,date,order:0});
+
+document.getElementById("url").value="";
+
+document.getElementById("comment").value="";
+
 }
 
-window.saveComment = async function(id){
-  const input = document.getElementById("editInput-"+id);
-  await updateDoc(doc(db,"videos",id), { comment: input.value });
+/* 削除 */
+
+window.deleteVideo=async function(id){
+
+await deleteDoc(doc(db,"videos",id));
+
 }
 
-/* -------------------- 削除 -------------------- */
-window.deleteVideo = async function(id){
-  await deleteDoc(doc(db,"videos",id));
+/* 編集 */
+
+window.editComment=function(id){
+
+const div=document.getElementById("comment-"+id);
+
+const text=div.innerText;
+
+div.innerHTML=`<input id="editInput-${id}" value="${text}">
+<button class="save" onclick="saveComment('${id}')">保存</button>`;
+
 }
 
-/* -------------------- Firestore 並び順更新 -------------------- */
-async function updateOrderInFirestore(id, order){
-  await updateDoc(doc(db,"videos",id), { order });
+window.saveComment=async function(id){
+
+const value=document.getElementById("editInput-"+id).value;
+
+await updateDoc(doc(db,"videos",id),{comment:value});
+
 }
 
-/* -------------------- 動画リスト描画 -------------------- */
+/* YouTube ID */
+
+function getYoutubeID(url){
+
+const regExp=/(?:youtube\.com.*(?:\?|&)v=|youtu\.be\/)([^&]+)/;
+
+const match=url.match(regExp);
+
+return match?match[1]:null;
+
+}
+
+/* 動画表示 */
+
 function renderVideos(snapshot){
-  const list = document.getElementById("videoList");
-  list.innerHTML="";
 
-  const videos = snapshot.docs.map(docSnap => ({ id: docSnap.id, ...docSnap.data() }));
-  videos.sort((a,b)=>(a.order||0)-(b.order||0));
+const list=document.getElementById("videoList");
 
-  videos.forEach(data=>{
-    if(currentDate && data.date !== currentDate) return;
+list.innerHTML="";
 
-    const div = document.createElement("div");
-    div.className = "videoCard";
-    div.dataset.id = data.id;
+snapshot.forEach(docSnap=>{
 
-    // URLをクリック可能に
-    div.innerHTML = `
-      <div class="videoInfo">
-        <strong>📅 ${data.date}</strong>
-        <div class="url">
-          <a href="${data.url}" target="_blank">${data.url}</a>
-        </div>
-        <div class="comment" id="comment-${data.id}">${data.comment || ""}</div>
-      </div>
-      <div>
-        <button class="edit" onclick="editComment('${data.id}')">編集</button>
-        <button class="delete" onclick="deleteVideo('${data.id}')">削除</button>
-      </div>
-    `;
+const data=docSnap.data();
 
-    list.appendChild(div);
-  });
+if(currentDate&&data.date!==currentDate)return;
 
-  // Sortable 初期化
-  if(!sortableInitialized){
-    new Sortable(list,{
-      animation:150,
-      onEnd(evt){
-        const items = list.querySelectorAll(".videoCard");
-        items.forEach((item,index)=>{
-          updateOrderInFirestore(item.dataset.id,index);
-        });
-      }
-    });
-    sortableInitialized = true;
-  }
+const videoId=getYoutubeID(data.url);
+
+const div=document.createElement("div");
+
+div.className="videoCard";
+
+div.innerHTML=`
+
+<div class="videoInfo">
+
+<strong>📅 ${data.date}</strong>
+
+<a href="${data.url}" target="_blank">
+
+<img class="thumb" src="https://img.youtube.com/vi/${videoId}/0.jpg">
+
+</a>
+
+<div class="comment" id="comment-${docSnap.id}">
+
+${data.comment||""}
+
+</div>
+
+</div>
+
+<div>
+
+<button class="edit" onclick="editComment('${docSnap.id}')">編集</button>
+
+<button class="delete" onclick="deleteVideo('${docSnap.id}')">削除</button>
+
+</div>
+
+`;
+
+list.appendChild(div);
+
+});
+
 }
 
-/* -------------------- カレンダー描画 -------------------- */
+/* 月移動 */
+
+window.prevMonth=function(){
+
+calendarMonth--;
+
+if(calendarMonth<0){
+
+calendarMonth=11;
+
+calendarYear--;
+
+}
+
+renderCalendar(lastSnapshot);
+
+}
+
+window.nextMonth=function(){
+
+calendarMonth++;
+
+if(calendarMonth>11){
+
+calendarMonth=0;
+
+calendarYear++;
+
+}
+
+renderCalendar(lastSnapshot);
+
+}
+
+/* カレンダー */
+
 function renderCalendar(snapshot){
-  const calendarDiv = document.getElementById("calendar");
-  calendarDiv.innerHTML="";
 
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = today.getMonth();
-  const daysInMonth = new Date(year, month+1, 0).getDate();
+lastSnapshot=snapshot;
 
-  for(let d=1; d<=daysInMonth; d++){
-    const dayDiv = document.createElement("div");
-    dayDiv.className="calendar-day";
-    const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    dayDiv.innerText=d;
+const calendar=document.getElementById("calendar");
 
-    if(today.getDate()===d) dayDiv.classList.add("today");
+calendar.innerHTML="";
 
-    snapshot.forEach(doc=>{
-      if(doc.data().date===dateStr) dayDiv.classList.add("hasVideo");
-    });
+const title=document.createElement("div");
 
-    dayDiv.onclick = ()=>{
-      currentDate = dateStr;
-      renderVideos(snapshot);
-      highlightCalendarDay(dateStr);
-    };
+title.style.gridColumn="span 7";
 
-    calendarDiv.appendChild(dayDiv);
-  }
+title.style.textAlign="center";
+
+title.innerHTML=`<button onclick="prevMonth()">◀</button> ${calendarYear}年 ${calendarMonth+1}月 <button onclick="nextMonth()">▶</button>`;
+
+calendar.appendChild(title);
+
+const week=["日","月","火","水","木","金","土"];
+
+week.forEach(d=>{
+
+const w=document.createElement("div");
+
+w.innerText=d;
+
+w.style.fontWeight="bold";
+
+w.style.textAlign="center";
+
+calendar.appendChild(w);
+
+});
+
+const firstDay=new Date(calendarYear,calendarMonth,1).getDay();
+
+const days=new Date(calendarYear,calendarMonth+1,0).getDate();
+
+for(let i=0;i<firstDay;i++){
+
+calendar.appendChild(document.createElement("div"));
+
 }
 
-/* -------------------- カレンダー選択ハイライト -------------------- */
-function highlightCalendarDay(dateStr){
-  const days = document.querySelectorAll(".calendar-day");
-  days.forEach(day=>{
-    if(day.innerText==parseInt(dateStr.split('-')[2])) day.classList.add("active");
-    else day.classList.remove("active");
-  });
-  document.getElementById("selectedDate").innerText = currentDate ? `${currentDate} の動画` : "すべての動画";
+for(let d=1;d<=days;d++){
+
+const day=document.createElement("div");
+
+day.className="calendar-day";
+
+const dateStr=`${calendarYear}-${String(calendarMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+
+day.innerText=d;
+
+snapshot.forEach(doc=>{
+
+if(doc.data().date===dateStr){
+
+day.classList.add("hasVideo");
+
 }
 
-/* -------------------- Firestore リアルタイム同期 -------------------- */
-const q = query(videosRef, orderBy("order","asc"));
+});
+
+day.onclick=()=>{
+
+currentDate=dateStr;
+
+renderVideos(snapshot);
+
+};
+
+calendar.appendChild(day);
+
+}
+
+}
+
+/* Firestore */
+
+const q=query(videosRef,orderBy("order","asc"));
+
 onSnapshot(q,(snapshot)=>{
-  renderCalendar(snapshot);
-  renderVideos(snapshot);
+
+renderCalendar(snapshot);
+
+renderVideos(snapshot);
+
 });
