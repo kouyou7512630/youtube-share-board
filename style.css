@@ -1,94 +1,72 @@
 body{
-
 margin:0;
 font-family:Arial;
 background:#f4f4f4;
-
 }
 
 header{
-
 background:#ff0000;
 color:white;
 text-align:center;
 padding:20px;
-
 }
 
 .container{
-
 max-width:900px;
 margin:auto;
 padding:20px;
-
 }
 
 .controls{
-
 display:flex;
 flex-wrap:wrap;
 gap:10px;
 margin-bottom:20px;
-
 }
 
 input{
-
 padding:10px;
 font-size:16px;
 flex:1;
-
 }
 
 button{
-
 padding:10px 20px;
 background:#ff0000;
 color:white;
 border:none;
 cursor:pointer;
-
 }
 
 .dateList{
-
 display:flex;
 flex-wrap:wrap;
 gap:10px;
 margin-bottom:20px;
-
 }
 
 .dateItem{
-
 background:white;
 padding:10px 15px;
 border-radius:5px;
 cursor:pointer;
 box-shadow:0 2px 5px rgba(0,0,0,0.2);
-
 }
 
 .videoCard{
-
 background:white;
 padding:15px;
 margin-bottom:15px;
 border-radius:5px;
 box-shadow:0 2px 8px rgba(0,0,0,0.2);
-
 }
 
 .url{
-
 color:blue;
 word-break:break-all;
-
 }
 
 .delete{
-
 margin-top:10px;
 background:#333;
-
 }
