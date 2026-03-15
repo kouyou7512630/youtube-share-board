@@ -1,27 +1,7 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, addDoc, deleteDoc, doc, updateDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import Sortable from "https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js";
-
-// Firebase設定
-const firebaseConfig = {
-  apiKey: "AIzaSyBONAWg79Un6Tag0vPP0PB0UiqJLL6KvtM",
-  authDomain: "shareboard-ee031.firebaseapp.com",
-  projectId: "shareboard-ee031",
-  storageBucket: "shareboard-ee031.firebasestorage.app",
-  messagingSenderId: "972674645025",
-  appId: "1:972674645025:web:468e8a52a964e4a53e3760"
-};
-
-// Firebase初期化
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const videosRef = collection(db, "videos");
-
-let selectedDate = null;
-let videos = {};
+/* Firebase設定 */
 const correctPassword = "54315";
 
-// ===== ログイン関数 =====
+// ログイン処理
 function checkPassword() {
   const password = document.getElementById("passwordInput").value.trim();
   console.log("入力されたパスワード:", password); // 入力されたパスワードを確認
@@ -40,7 +20,7 @@ function checkPassword() {
 
 window.checkPassword = checkPassword;
 
-// ===== 動画追加 =====
+// 動画追加
 async function addVideo() {
   const date = document.getElementById("date").value;
   const url = document.getElementById("url").value.trim();
@@ -60,7 +40,7 @@ async function addVideo() {
 
 window.addVideo = addVideo;
 
-// ===== Firestoreから動画読み込み =====
+// 動画表示
 function loadVideos() {
   const q = query(videosRef, orderBy("date", "asc"));
   onSnapshot(q, (snapshot) => {
@@ -75,7 +55,7 @@ function loadVideos() {
   });
 }
 
-// ===== 動画レンダリング =====
+// 動画レンダリング
 function renderVideos() {
   const container = document.getElementById("videoList");
   container.innerHTML = "";
@@ -128,32 +108,7 @@ function renderVideos() {
 
 window.renderVideos = renderVideos;
 
-// ===== 編集 =====
-async function editVideo(date, index) {
-  const newComment = prompt("コメントを編集:", videos[date][index].comment);
-  if (newComment !== null) {
-    videos[date][index].comment = newComment;
-    await updateDoc(doc(db, "videos", videos[date][index].id), { comment: newComment });
-    renderVideos();
-  }
-}
-
-window.editVideo = editVideo;
-
-// ===== 削除 =====
-async function deleteVideo(date, index) {
-  if (confirm("削除しますか？")) {
-    await deleteDoc(doc(db, "videos", videos[date][index].id));
-    videos[date].splice(index, 1);
-    if (videos[date].length === 0) delete videos[date];
-    renderVideos();
-    highlightCalendar();
-  }
-}
-
-window.deleteVideo = deleteVideo;
-
-// ===== カレンダー表示 =====
+// カレンダー表示
 function highlightCalendar() {
   const calendar = document.getElementById("calendar");
   calendar.innerHTML = "";
@@ -193,17 +148,13 @@ function highlightCalendar() {
 
 window.highlightCalendar = highlightCalendar;
 
-// ===== ページ読み込み時 =====
+// ページ読み込み時
 document.addEventListener('DOMContentLoaded', () => {
-  console.log("ページが読み込まれました");
-
   if (localStorage.getItem('loggedIn') === 'true') {
-    console.log("ログイン状態: ログイン済み");
     document.getElementById("loginScreen").style.display = "none";
     document.getElementById("siteContent").style.display = "block";
     loadVideos();
   } else {
-    console.log("ログイン状態: 未ログイン");
     document.getElementById("loginScreen").style.display = "flex"; // flexにして中央表示
   }
 });
