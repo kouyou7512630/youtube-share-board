@@ -1,9 +1,9 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc, deleteDoc, doc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// ■ パスワード保護
+/* ■ パスワード保護 */
 window.onload = function(){
-  const password = "54315"; // 任意のパスワード
+  const password = "54315";
   const userPass = prompt("サイト閲覧にはパスワードが必要です:");
   if(userPass !== password){
     alert("パスワードが間違っています。サイトを閉じます。");
@@ -12,7 +12,7 @@ window.onload = function(){
   }
 }
 
-// Firebase設定
+/* Firebase設定 */
 const firebaseConfig = {
   apiKey: "AIzaSyBONAWg79Un6Tag0vPP0PB0UiqJLL6KvtM",
   authDomain: "shareboard-ee031.firebaseapp.com",
@@ -28,7 +28,7 @@ const videosRef = collection(db,"videos");
 
 let currentDate = null;
 
-// 投稿
+/* 投稿 */
 window.addVideo = async function(){
 const url = document.getElementById("url").value;
 const comment = document.getElementById("comment").value;
@@ -39,7 +39,7 @@ document.getElementById("url").value="";
 document.getElementById("comment").value="";
 }
 
-// コメント編集
+/* コメント編集 */
 window.editComment = function(id){
 const commentDiv = document.getElementById("comment-"+id);
 const text = commentDiv.innerText;
@@ -52,12 +52,12 @@ const input = document.getElementById("editInput-"+id);
 await updateDoc(doc(db,"videos",id), {comment: input.value});
 }
 
-// 削除
+/* 削除 */
 window.deleteVideo = async function(id){
 await deleteDoc(doc(db,"videos",id));
 }
 
-// カレンダー表示
+/* カレンダー表示 */
 function renderCalendar(snapshot){
 const calendarDiv = document.getElementById("calendar");
 calendarDiv.innerHTML="";
@@ -73,6 +73,9 @@ dayDiv.className="calendar-day";
 const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
 dayDiv.innerText=d;
 
+// 今日の日付
+if(today.getDate()===d){ dayDiv.classList.add("today"); }
+
 // 動画がある日を強調
 snapshot.forEach(doc=>{
 if(doc.data().date===dateStr){ dayDiv.classList.add("hasVideo"); }
@@ -87,7 +90,7 @@ calendarDiv.appendChild(dayDiv);
 }
 }
 
-// カレンダー選択日強調
+/* カレンダー選択日強調 */
 function highlightCalendarDay(dateStr){
 const days = document.querySelectorAll(".calendar-day");
 days.forEach(day=>{
@@ -96,7 +99,7 @@ else{day.classList.remove("active");}
 });
 }
 
-// 動画一覧表示
+/* 動画一覧表示 */
 function renderVideos(snapshot){
 const list=document.getElementById("videoList");
 list.innerHTML="";
@@ -124,7 +127,7 @@ list.appendChild(div);
 });
 }
 
-// Firestoreリアルタイム同期
+/* Firestoreリアルタイム同期 */
 onSnapshot(videosRef,(snapshot)=>{
 renderCalendar(snapshot);
 renderVideos(snapshot);
