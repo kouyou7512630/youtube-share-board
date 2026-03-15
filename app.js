@@ -1,158 +1,155 @@
-/* Firebase設定 */
-const correctPassword = "ryuseikai123";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, addDoc, deleteDoc, doc, updateDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// ログイン処理
-function checkPassword() {
-  const password = document.getElementById("passwordInput").value.trim();
-  console.log("入力されたパスワード:", password); // 入力されたパスワードを確認
-  
-  if (password === correctPassword) {
-    localStorage.setItem('loggedIn', 'true');  // ログイン状態を保存
-    document.getElementById("loginScreen").style.display = "none";  // ログイン画面非表示
-    document.getElementById("siteContent").style.display = "block";  // サイトコンテンツ表示
-    loadVideos();  // 動画の読み込み
-  } else {
-    alert("パスワードが間違っています。");  // 失敗した場合
-  }
-}
-
-window.checkPassword = checkPassword;
-
-// 動画追加
-async function addVideo() {
-  const date = document.getElementById("date").value;
-  const url = document.getElementById("url").value.trim();
-  const comment = document.getElementById("comment").value.trim();
-
-  if (!date || !url) {
-    alert("日付とURLを入力してください");
+/* ■ パスワード保護 */
+window.onload = function(){
+  const password = "54315";
+  const userPass = prompt("サイト閲覧にはパスワードが必要です:");
+  if(userPass !== password){
+    alert("パスワードが間違っています。サイトを閉じます。");
+    document.body.innerHTML = "<h2 style='text-align:center;margin-top:50px;color:red;'>パスワードが違います</h2>";
     return;
   }
-
-  const newVideo = { url, comment, date, order: 0 };
-  await addDoc(videosRef, newVideo);
-
-  document.getElementById("url").value = "";
-  document.getElementById("comment").value = "";
 }
 
-window.addVideo = addVideo;
+/* Firebase設定 */
+const firebaseConfig = {
+  apiKey: "AIzaSyBONAWg79Un6Tag0vPP0PB0UiqJLL6KvtM",
+  authDomain: "shareboard-ee031.firebaseapp.com",
+  projectId: "shareboard-ee031",
+  storageBucket: "shareboard-ee031.firebasestorage.app",
+  messagingSenderId: "972674645025",
+  appId: "1:972674645025:web:468e8a52a964e4a53e3760"
+};
 
-// 動画表示
-function loadVideos() {
-  const q = query(videosRef, orderBy("date", "asc"));
-  onSnapshot(q, (snapshot) => {
-    videos = {};
-    snapshot.docs.forEach((docItem) => {
-      const data = docItem.data();
-      if (!videos[data.date]) videos[data.date] = [];
-      videos[data.date].push({ ...data, id: docItem.id });
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const videosRef = collection(db,"videos");
+
+let currentDate = null;
+let sortableInitialized = false; 
+
+/* 投稿 */
+window.addVideo = async function(){
+  const url = document.getElementById("url").value;
+  const comment = document.getElementById("comment").value;
+  const date = document.getElementById("date").value;
+  if(!url || !date){alert("日付とURLを入力してください"); return;}
+  await addDoc(videosRef,{url, comment, date, order: 0});
+  document.getElementById("url").value="";
+  document.getElementById("comment").value="";
+}
+
+/* コメント編集 */
+window.editComment = function(id){
+  const commentDiv = document.getElementById("comment-"+id);
+  const text = commentDiv.innerText;
+  commentDiv.innerHTML = `<input type="text" id="editInput-${id}" value="${text}">
+  <button class="save" onclick="saveComment('${id}')">保存</button>`;
+}
+
+window.saveComment = async function(id){
+  const input = document.getElementById("editInput-"+id);
+  await updateDoc(doc(db,"videos",id), {comment: input.value});
+}
+
+/* 削除 */
+window.deleteVideo = async function(id){
+  await deleteDoc(doc(db,"videos",id));
+}
+
+/* Firestore順序更新 */
+async function updateOrderInFirestore(id, order){
+  await updateDoc(doc(db, "videos", id), { order });
+}
+
+/* 動画一覧表示 */
+function renderVideos(snapshot){
+  const list = document.getElementById("videoList");
+  list.innerHTML = "";
+
+  const videos = snapshot.docs.map(docSnap => ({id: docSnap.id, ...docSnap.data()}));
+  videos.sort((a,b) => (a.order||0) - (b.order||0));
+
+  videos.forEach(data => {
+    if(currentDate && data.date!==currentDate) return;
+
+    const div = document.createElement("div");
+    div.className = "videoCard";
+    div.dataset.id = data.id;
+
+    div.innerHTML = `
+      <div class="videoInfo">
+        <strong>📅 ${data.date}</strong>
+        <div class="url">${data.url}</div>
+        <div class="comment" id="comment-${data.id}">${data.comment || ""}</div>
+      </div>
+      <div>
+        <button class="edit" onclick="editComment('${data.id}')">編集</button>
+        <button class="delete" onclick="deleteVideo('${data.id}')">削除</button>
+      </div>
+    `;
+
+    list.appendChild(div);
+  });
+
+  if(!sortableInitialized){
+    new Sortable(list, {
+      animation:150,
+      onEnd(evt){
+        const items = list.querySelectorAll(".videoCard");
+        items.forEach((item,index)=>{
+          updateOrderInFirestore(item.dataset.id,index);
+        });
+      }
     });
-    renderVideos();
-    highlightCalendar();
-  });
+    sortableInitialized = true;
+  }
 }
 
-// 動画レンダリング
-function renderVideos() {
-  const container = document.getElementById("videoList");
-  container.innerHTML = "";
+/* カレンダー表示 */
+function renderCalendar(snapshot){
+  const calendarDiv = document.getElementById("calendar");
+  calendarDiv.innerHTML="";
 
-  const datesToShow = selectedDate ? [selectedDate] : Object.keys(videos).sort();
-
-  datesToShow.forEach((date) => {
-    if (!videos[date]) return;
-
-    videos[date].forEach((video, index) => {
-      const card = document.createElement("div");
-      card.className = "videoCard";
-      card.dataset.date = date;
-      card.dataset.index = index;
-
-      const info = document.createElement("div");
-      info.className = "videoInfo";
-      info.innerHTML = `<div class="url">${video.url}</div>
-                        <div class="comment">${video.comment}</div>`;
-
-      const editBtn = document.createElement("button");
-      editBtn.textContent = "編集";
-      editBtn.className = "edit";
-      editBtn.onclick = () => editVideo(date, index);
-
-      const deleteBtn = document.createElement("button");
-      deleteBtn.textContent = "削除";
-      deleteBtn.className = "delete";
-      deleteBtn.onclick = () => deleteVideo(date, index);
-
-      card.appendChild(info);
-      card.appendChild(editBtn);
-      card.appendChild(deleteBtn);
-
-      container.appendChild(card);
-    });
-  });
-
-  // ドラッグで順番入れ替え
-  new Sortable(container, {
-    animation: 150,
-    onEnd: function (evt) {
-      const parentDate = evt.item.dataset.date;
-      const item = videos[parentDate].splice(evt.oldIndex, 1)[0];
-      videos[parentDate].splice(evt.newIndex, 0, item);
-      renderVideos();
-    }
-  });
-}
-
-window.renderVideos = renderVideos;
-
-// カレンダー表示
-function highlightCalendar() {
-  const calendar = document.getElementById("calendar");
-  calendar.innerHTML = "";
   const today = new Date();
   const year = today.getFullYear();
   const month = today.getMonth();
+  const daysInMonth = new Date(year, month+1, 0).getDate();
 
-  const firstDay = new Date(year, month, 1).getDay();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-  for (let i = 0; i < firstDay; i++) {
-    const empty = document.createElement("div");
-    calendar.appendChild(empty);
-  }
-
-  for (let d = 1; d <= daysInMonth; d++) {
+  for(let d=1; d<=daysInMonth; d++){
     const dayDiv = document.createElement("div");
-    dayDiv.className = "calendar-day";
-    const dateStr = `${year}-${String(month + 1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
-    dayDiv.textContent = d;
+    dayDiv.className="calendar-day";
+    const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    dayDiv.innerText=d;
 
-    if (videos[dateStr] && videos[dateStr].length > 0) dayDiv.classList.add("hasVideo");
-    if (dateStr === selectedDate) dayDiv.classList.add("active");
-    const todayStr = `${year}-${String(month+1).padStart(2,"0")}-${String(today.getDate()).padStart(2,"0")}`;
-    if (dateStr === todayStr) dayDiv.classList.add("today");
+    if(today.getDate()===d){ dayDiv.classList.add("today"); }
 
-    dayDiv.onclick = () => {
-      selectedDate = dateStr;
-      document.getElementById("selectedDate").textContent = dateStr + "の動画";
-      renderVideos();
-      highlightCalendar();
+    snapshot.forEach(doc=>{
+      if(doc.data().date===dateStr){ dayDiv.classList.add("hasVideo"); }
+    });
+
+    dayDiv.onclick=()=>{
+      currentDate=dateStr;
+      renderVideos(snapshot);
+      highlightCalendarDay(dateStr);
     };
-
-    calendar.appendChild(dayDiv);
+    calendarDiv.appendChild(dayDiv);
   }
 }
 
-window.highlightCalendar = highlightCalendar;
+function highlightCalendarDay(dateStr){
+  const days = document.querySelectorAll(".calendar-day");
+  days.forEach(day=>{
+    if(day.innerText==parseInt(dateStr.split('-')[2])) day.classList.add("active");
+    else day.classList.remove("active");
+  });
+  document.getElementById("selectedDate").innerText = currentDate ? `${currentDate} の動画` : "すべての動画";
+}
 
-// ページ読み込み時
-document.addEventListener('DOMContentLoaded', () => {
-  if (localStorage.getItem('loggedIn') === 'true') {
-    document.getElementById("loginScreen").style.display = "none";
-    document.getElementById("siteContent").style.display = "block";
-    loadVideos();
-  } else {
-    document.getElementById("loginScreen").style.display = "flex"; // flexにして中央表示
-  }
+/* Firestoreリアルタイム同期 */
+const q = query(videosRef, orderBy("order","asc"));
+onSnapshot(q,(snapshot)=>{
+  renderCalendar(snapshot);
+  renderVideos(snapshot);
 });
