@@ -1,14 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
-<title>YouTube Share Board</title>
-
+<title>流星会</title>
 <link rel="stylesheet" href="style.css">
-
 </head>
 
 <body>
@@ -20,28 +16,20 @@
 <div class="container">
 
 <div class="controls">
-
 <input type="date" id="date">
-
 <input type="text" id="url" placeholder="YouTube URL">
-
 <input type="text" id="comment" placeholder="コメント">
-
 <button onclick="addVideo()">投稿</button>
-
 </div>
 
 <h2>📅 投稿されている日</h2>
-
 <div id="dateList" class="dateList"></div>
 
 <h2 id="selectedDate">すべての動画</h2>
-
 <div id="videoList"></div>
 
 </div>
 
 <script type="module" src="app.js"></script>
-
 </body>
 </html>
