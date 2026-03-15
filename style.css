@@ -86,31 +86,31 @@ header .text:hover{
 }
 
 .calendar-day{
-  background:rgba(255,255,255,0.1);
-  backdrop-filter:blur(6px);
-  padding:12px;
-  border-radius:8px;
-  text-align:center;
-  cursor:pointer;
-}
-
-.calendar-day:hover{
-  background:rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.1); /* 背景を統一 */
+  backdrop-filter: blur(6px);
+  padding: 12px;
+  border-radius: 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.2s;
 }
 
 .calendar-day.hasVideo{
-  border:2px solid #ff7a18;
+  border: 2px solid #ff7a18; /* borderだけで動画のある日を強調 */
+}
+
+.calendar-day.today{
+  border: 2px solid #00ff99;
+  background: rgba(0,255,153,0.2);
+  font-weight: bold;
+}
+
+.calendar-day:hover{
+  background: rgba(255,255,255,0.15);
 }
 
 .calendar-day.active{
   background:#ff7a18;
-}
-
-/* 今日の日付 */
-.calendar-day.today {
-  border: 2px solid #00ff99;
-  background: rgba(0,255,153,0.2);
-  font-weight: bold;
 }
 
 /* フィルター */
