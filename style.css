@@ -106,6 +106,13 @@ header .text:hover{
   background:#ff7a18;
 }
 
+/* 今日の日付 */
+.calendar-day.today {
+  border: 2px solid #00ff99;
+  background: rgba(0,255,153,0.2);
+  font-weight: bold;
+}
+
 /* フィルター */
 .filterButtons{
   display:flex;
@@ -120,6 +127,13 @@ header .text:hover{
   border-radius:6px;
   color:white;
   cursor:pointer;
+}
+
+/* 選択中ボタンを下線と文字色で表示 */
+.filterButtons button.active {
+  border-bottom: 3px solid #ffd24d;
+  font-weight: bold;
+  color: #ffd24d;
 }
 
 /* 動画カード */
