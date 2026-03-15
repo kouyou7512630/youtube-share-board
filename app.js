@@ -128,13 +128,21 @@ snapshot.forEach(docSnap=>{
 
 const data=docSnap.data();
 
-if(currentDate&&data.date!==currentDate)return;
+if(currentDate && data.date!==currentDate) return;
 
 const div=document.createElement("div");
 
 div.className="videoCard";
 
+div.dataset.id=docSnap.id;
+
 div.innerHTML=`
+
+<div class="dragHandle">
+
+<i class="fas fa-grip-lines"></i>
+
+</div>
 
 <div class="videoInfo">
 
@@ -158,7 +166,7 @@ ${data.comment||""}
 
 </div>
 
-<div>
+<div class="buttons">
 
 <button class="edit" onclick="editComment('${docSnap.id}')">編集</button>
 
@@ -169,6 +177,38 @@ ${data.comment||""}
 `;
 
 list.appendChild(div);
+
+});
+
+/* Sortable */
+
+new Sortable(list,{
+
+handle:".dragHandle",
+
+animation:250,
+
+easing:"cubic-bezier(0.25, 1, 0.5, 1)",
+
+ghostClass:"dragging",
+
+chosenClass:"chosen",
+
+delay:120,
+
+delayOnTouchOnly:true,
+
+onEnd(){
+
+const items=list.querySelectorAll(".videoCard");
+
+items.forEach((item,index)=>{
+
+updateDoc(doc(db,"videos",item.dataset.id),{order:index});
+
+});
+
+}
 
 });
 
