@@ -47,6 +47,10 @@ window.showAllVideos = function(){
   filterMode="all";
   renderVideos(lastSnapshot);
   document.getElementById("selectedDate").innerText="すべての動画";
+
+  // ボタンのアクティブ切替
+  document.querySelector(".filterButtons button:nth-child(1)").classList.add("active");
+  document.querySelector(".filterButtons button:nth-child(2)").classList.remove("active");
 }
 
 window.showSelectedVideos = function(){
@@ -54,6 +58,10 @@ window.showSelectedVideos = function(){
   filterMode="date";
   renderVideos(lastSnapshot);
   document.getElementById("selectedDate").innerText=currentDate+" の動画";
+
+  // ボタンのアクティブ切替
+  document.querySelector(".filterButtons button:nth-child(1)").classList.remove("active");
+  document.querySelector(".filterButtons button:nth-child(2)").classList.add("active");
 }
 
 /* 削除 */
@@ -190,6 +198,10 @@ function renderCalendar(snapshot){
       filterMode = "date";
       renderVideos(snapshot);
       document.getElementById("selectedDate").innerText = dateStr + " の動画";
+
+      // ボタンを「選択日の動画」にアクティブ
+      document.querySelector(".filterButtons button:nth-child(1)").classList.remove("active");
+      document.querySelector(".filterButtons button:nth-child(2)").classList.add("active");
     };
 
     calendar.appendChild(day);
@@ -201,4 +213,9 @@ const q = query(videosRef,orderBy("order","asc"));
 onSnapshot(q,(snapshot)=>{
   renderCalendar(snapshot);
   renderVideos(snapshot);
+});
+
+/* 初期状態: すべての動画を表示 */
+window.addEventListener("DOMContentLoaded",()=>{
+  showAllVideos();
 });
