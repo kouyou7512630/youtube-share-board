@@ -1,7 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc, deleteDoc, doc, updateDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-/* パスワード保護 */
+/* パスワード保護 変更*/
 window.onload = function(){
   const password = "54315";
   const userPass = prompt("サイト閲覧にはパスワードが必要です:");
