@@ -1,4 +1,7 @@
-// Firebase 設定
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, addDoc, deleteDoc, doc, updateDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+// Firebase設定
 const firebaseConfig = {
   apiKey: "AIzaSyBONAWg79Un6Tag0vPP0PB0UiqJLL6KvtM",
   authDomain: "shareboard-ee031.firebaseapp.com",
@@ -9,24 +12,21 @@ const firebaseConfig = {
 };
 
 // Firebase 初期化
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, addDoc, deleteDoc, doc, updateDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const videosRef = collection(db, "videos");
 
 let selectedDate = null;
-
-// ===== 1段階目: パスワード確認 =====
 const correctPassword = "54315";
 
+// ===== ログイン確認 =====
 function checkPassword() {
   const password = document.getElementById("passwordInput").value.trim();
   if (password === correctPassword) {
+    localStorage.setItem('loggedIn', 'true'); // ログイン状態をローカルストレージに保存
     document.getElementById("loginScreen").style.display = "none";
     document.getElementById("siteContent").style.display = "block";
-    loadVideos();
+    loadVideos(); // ログイン後に動画読み込み
   } else {
     alert("パスワードが間違っています。");
   }
@@ -178,6 +178,11 @@ function highlightCalendar() {
 
 // 読み込み時
 function loadVideos() {
+  if (localStorage.getItem('loggedIn') !== 'true') {
+    document.getElementById("loginScreen").style.display = "block"; // ログインフォーム表示
+    return;
+  }
+
   // Firestore から動画を読み込む
   const q = query(videosRef, orderBy("date", "asc"));
   onSnapshot(q, (snapshot) => {
@@ -191,3 +196,8 @@ function loadVideos() {
     highlightCalendar();
   });
 }
+
+// ページ読み込み時にログインチェック
+window.onload = function () {
+  loadVideos(); // ログイン確認後に動画データを読み込む
+};
