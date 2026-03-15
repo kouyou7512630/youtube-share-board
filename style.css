@@ -2,7 +2,7 @@
 body {
   margin:0;
   font-family:'Segoe UI', sans-serif;
-  background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
+  background: linear-gradient(135deg, #dfe6ed, #f0f4f8);
   color:#102a43;
 }
 
@@ -80,9 +80,9 @@ button:hover {
   color: #102a43;
   box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
-.calendar-day.hasVideo { border: 2px solid #ff6b35; }
+.calendar-day.hasVideo { border: 2px solid #ff6b35; } 
 .calendar-day.active { background: #ffb86b; color: #102a43; font-weight: bold; }
-.calendar-day.today { background: #ffe5b4; font-weight: bold; }
+.calendar-day.today { background: #ffe5b4; color: #102a43; font-weight: bold; }
 .calendar-day:hover { background: #f5f5f5; }
 
 /* 動画カード */
