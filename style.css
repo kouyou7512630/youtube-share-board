@@ -1,94 +1,158 @@
-body{
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 
-margin:0;
-font-family:Arial;
-background:#f4f4f4;
+import {
 
-}
-
-header{
-
-background:#ff0000;
-color:white;
-text-align:center;
-padding:20px;
+getFirestore,
+collection,
+addDoc,
+getDocs,
+deleteDoc,
+doc
 
 }
 
-.container{
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-max-width:900px;
-margin:auto;
-padding:20px;
 
-}
+const firebaseConfig = {
+  apiKey: "AIzaSyBONAWg79Un6Tag0vPP0PB0UiqJLL6KvtM",
+  authDomain: "shareboard-ee031.firebaseapp.com",
+  projectId: "shareboard-ee031",
+  storageBucket: "shareboard-ee031.firebasestorage.app",
+  messagingSenderId: "972674645025",
+  appId: "1:972674645025:web:468e8a52a964e4a53e3760"
+};
 
-.controls{
 
-display:flex;
-flex-wrap:wrap;
-gap:10px;
-margin-bottom:20px;
+const app=initializeApp(firebaseConfig);
 
-}
+const db=getFirestore(app);
 
-input{
 
-padding:10px;
-font-size:16px;
-flex:1;
+window.addVideo=async function(){
 
-}
+const url=document.getElementById("url").value;
+const comment=document.getElementById("comment").value;
+const date=document.getElementById("date").value;
 
-button{
+if(!url||!date){
 
-padding:10px 20px;
-background:#ff0000;
-color:white;
-border:none;
-cursor:pointer;
+alert("日付とURLを入力してください");
+return;
 
 }
 
-.dateList{
+await addDoc(collection(db,"videos"),{
 
-display:flex;
-flex-wrap:wrap;
-gap:10px;
-margin-bottom:20px;
+url:url,
+comment:comment,
+date:date
 
-}
+});
 
-.dateItem{
+document.getElementById("url").value="";
+document.getElementById("comment").value="";
 
-background:white;
-padding:10px 15px;
-border-radius:5px;
-cursor:pointer;
-box-shadow:0 2px 5px rgba(0,0,0,0.2);
+loadDates();
 
 }
 
-.videoCard{
 
-background:white;
-padding:15px;
-margin-bottom:15px;
-border-radius:5px;
-box-shadow:0 2px 8px rgba(0,0,0,0.2);
+async function loadDates(){
+
+const snapshot=await getDocs(collection(db,"videos"));
+
+const dates=new Set();
+
+snapshot.forEach(doc=>{
+
+dates.add(doc.data().date);
+
+});
+
+const list=document.getElementById("dateList");
+
+list.innerHTML="";
+
+dates.forEach(date=>{
+
+const div=document.createElement("div");
+
+div.className="dateItem";
+
+div.innerText=date;
+
+div.onclick=()=>loadVideos(date);
+
+list.appendChild(div);
+
+});
 
 }
 
-.url{
 
-color:blue;
-word-break:break-all;
+async function loadVideos(date){
+
+document.getElementById("selectedDate").innerText="📅 "+date+" の動画";
+
+const snapshot=await getDocs(collection(db,"videos"));
+
+const list=document.getElementById("videoList");
+
+list.innerHTML="";
+
+snapshot.forEach(docSnap=>{
+
+const data=docSnap.data();
+
+if(data.date!==date) return;
+
+const id=docSnap.id;
+
+const div=document.createElement("div");
+
+div.className="videoCard";
+
+div.innerHTML=`
+
+<div class="url">
+
+<a href="${data.url}" target="_blank">
+
+${data.url}
+
+</a>
+
+</div>
+
+<p>
+
+${data.comment||""}
+
+</p>
+
+<button class="delete" onclick="deleteVideo('${id}')">
+
+削除
+
+</button>
+
+`;
+
+list.appendChild(div);
+
+});
 
 }
 
-.delete{
 
-margin-top:10px;
-background:#333;
+window.deleteVideo=async function(id){
+
+await deleteDoc(doc(db,"videos",id));
+
+loadDates();
 
 }
+
+
+loadDates();
