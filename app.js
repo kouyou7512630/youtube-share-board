@@ -1,7 +1,11 @@
+// Firebase モジュール読み込み
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, addDoc, deleteDoc, doc, updateDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { 
+  getFirestore, collection, addDoc, deleteDoc, doc, updateDoc, 
+  onSnapshot, query, orderBy 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-/* パスワード保護 */
+/* -------------------- パスワード保護 -------------------- */
 window.onload = function(){
   const password = "54315";
   const userPass = prompt("サイト閲覧にはパスワードが必要です:");
@@ -12,6 +16,7 @@ window.onload = function(){
   }
 }
 
+/* -------------------- Firebase 初期化 -------------------- */
 const firebaseConfig = {
   apiKey: "AIzaSyBONAWg79Un6Tag0vPP0PB0UiqJLL6KvtM",
   authDomain: "shareboard-ee031.firebaseapp.com",
@@ -28,59 +33,71 @@ const videosRef = collection(db,"videos");
 let currentDate = null;
 let sortableInitialized = false;
 
-/* 投稿 */
+/* -------------------- 動画投稿 -------------------- */
 window.addVideo = async function(){
   const url = document.getElementById("url").value;
   const comment = document.getElementById("comment").value;
   const date = document.getElementById("date").value;
-  if(!url || !date){alert("日付とURLを入力してください"); return;}
-  await addDoc(videosRef,{url, comment, date, order: 0});
+
+  if(!url || !date){
+    alert("日付とURLを入力してください");
+    return;
+  }
+
+  await addDoc(videosRef,{ url, comment, date, order:0 });
+
+  // フォームをクリア
   document.getElementById("url").value="";
   document.getElementById("comment").value="";
 }
 
-/* コメント編集 */
+/* -------------------- コメント編集・保存 -------------------- */
 window.editComment = function(id){
   const commentDiv = document.getElementById("comment-"+id);
   const text = commentDiv.innerText;
-  commentDiv.innerHTML = `<input type="text" id="editInput-${id}" value="${text}">
-  <button class="save" onclick="saveComment('${id}')">保存</button>`;
+  commentDiv.innerHTML = `
+    <input type="text" id="editInput-${id}" value="${text}">
+    <button class="save" onclick="saveComment('${id}')">保存</button>
+  `;
 }
 
 window.saveComment = async function(id){
   const input = document.getElementById("editInput-"+id);
-  await updateDoc(doc(db,"videos",id), {comment: input.value});
+  await updateDoc(doc(db,"videos",id), { comment: input.value });
 }
 
-/* 削除 */
+/* -------------------- 削除 -------------------- */
 window.deleteVideo = async function(id){
   await deleteDoc(doc(db,"videos",id));
 }
 
-/* Firestore順序更新 */
+/* -------------------- Firestore 並び順更新 -------------------- */
 async function updateOrderInFirestore(id, order){
-  await updateDoc(doc(db, "videos", id), { order });
+  await updateDoc(doc(db,"videos",id), { order });
 }
 
-/* 動画一覧表示 */
+/* -------------------- 動画リスト描画 -------------------- */
 function renderVideos(snapshot){
   const list = document.getElementById("videoList");
-  list.innerHTML = "";
+  list.innerHTML="";
 
-  const videos = snapshot.docs.map(docSnap => ({id: docSnap.id, ...docSnap.data()}));
-  videos.sort((a,b) => (a.order||0) - (b.order||0));
+  const videos = snapshot.docs.map(docSnap => ({ id: docSnap.id, ...docSnap.data() }));
+  videos.sort((a,b)=>(a.order||0)-(b.order||0));
 
-  videos.forEach(data => {
-    if(currentDate && data.date!==currentDate) return;
+  videos.forEach(data=>{
+    if(currentDate && data.date !== currentDate) return;
 
     const div = document.createElement("div");
     div.className = "videoCard";
     div.dataset.id = data.id;
 
+    // URLをクリック可能に
     div.innerHTML = `
       <div class="videoInfo">
         <strong>📅 ${data.date}</strong>
-        <div class="url">${data.url}</div>
+        <div class="url">
+          <a href="${data.url}" target="_blank">${data.url}</a>
+        </div>
         <div class="comment" id="comment-${data.id}">${data.comment || ""}</div>
       </div>
       <div>
@@ -92,8 +109,9 @@ function renderVideos(snapshot){
     list.appendChild(div);
   });
 
+  // Sortable 初期化
   if(!sortableInitialized){
-    new Sortable(list, {
+    new Sortable(list,{
       animation:150,
       onEnd(evt){
         const items = list.querySelectorAll(".videoCard");
@@ -106,7 +124,7 @@ function renderVideos(snapshot){
   }
 }
 
-/* カレンダー表示 */
+/* -------------------- カレンダー描画 -------------------- */
 function renderCalendar(snapshot){
   const calendarDiv = document.getElementById("calendar");
   calendarDiv.innerHTML="";
@@ -122,21 +140,23 @@ function renderCalendar(snapshot){
     const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
     dayDiv.innerText=d;
 
-    if(today.getDate()===d){ dayDiv.classList.add("today"); }
+    if(today.getDate()===d) dayDiv.classList.add("today");
 
     snapshot.forEach(doc=>{
-      if(doc.data().date===dateStr){ dayDiv.classList.add("hasVideo"); }
+      if(doc.data().date===dateStr) dayDiv.classList.add("hasVideo");
     });
 
-    dayDiv.onclick=()=>{
-      currentDate=dateStr;
+    dayDiv.onclick = ()=>{
+      currentDate = dateStr;
       renderVideos(snapshot);
       highlightCalendarDay(dateStr);
     };
+
     calendarDiv.appendChild(dayDiv);
   }
 }
 
+/* -------------------- カレンダー選択ハイライト -------------------- */
 function highlightCalendarDay(dateStr){
   const days = document.querySelectorAll(".calendar-day");
   days.forEach(day=>{
@@ -146,19 +166,9 @@ function highlightCalendarDay(dateStr){
   document.getElementById("selectedDate").innerText = currentDate ? `${currentDate} の動画` : "すべての動画";
 }
 
-/* Firestoreリアルタイム同期 */
+/* -------------------- Firestore リアルタイム同期 -------------------- */
 const q = query(videosRef, orderBy("order","asc"));
 onSnapshot(q,(snapshot)=>{
   renderCalendar(snapshot);
   renderVideos(snapshot);
 });
-
-/*const firebaseConfig = {
-  apiKey: "AIzaSyBONAWg79Un6Tag0vPP0PB0UiqJLL6KvtM",
-  authDomain: "shareboard-ee031.firebaseapp.com",
-  projectId: "shareboard-ee031",
-  storageBucket: "shareboard-ee031.firebasestorage.app",
-  messagingSenderId: "972674645025",
-  appId: "1:972674645025:web:468e8a52a964e4a53e3760"
-};*/
-
