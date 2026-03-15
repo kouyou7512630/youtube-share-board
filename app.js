@@ -5,9 +5,9 @@ import {
 getFirestore,
 collection,
 addDoc,
-getDocs,
 deleteDoc,
-doc
+doc,
+onSnapshot
 
 }
 
@@ -27,6 +27,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+const videosRef = collection(db,"videos");
+
 
 window.addVideo = async function(){
 
@@ -41,7 +43,7 @@ return;
 
 }
 
-await addDoc(collection(db,"videos"),{
+await addDoc(videosRef,{
 
 url:url,
 comment:comment,
@@ -52,16 +54,15 @@ date:date
 document.getElementById("url").value="";
 document.getElementById("comment").value="";
 
-loadDates();
-
 }
 
 
-async function loadDates(){
+let currentDate="";
 
-const snapshot = await getDocs(collection(db,"videos"));
 
-const dates = new Set();
+function renderDates(snapshot){
+
+const dates=new Set();
 
 snapshot.forEach(doc=>{
 
@@ -69,7 +70,7 @@ dates.add(doc.data().date);
 
 });
 
-const list = document.getElementById("dateList");
+const list=document.getElementById("dateList");
 
 list.innerHTML="";
 
@@ -81,7 +82,11 @@ div.className="dateItem";
 
 div.innerText=date;
 
-div.onclick=()=>loadVideos(date);
+div.onclick=()=>{
+
+currentDate=date;
+renderVideos(snapshot);
+};
 
 list.appendChild(div);
 
@@ -90,11 +95,11 @@ list.appendChild(div);
 }
 
 
-async function loadVideos(date){
+function renderVideos(snapshot){
 
-document.getElementById("selectedDate").innerText="📅 "+date+" の動画";
+if(!currentDate) return;
 
-const snapshot = await getDocs(collection(db,"videos"));
+document.getElementById("selectedDate").innerText="📅 "+currentDate+" の動画";
 
 const list=document.getElementById("videoList");
 
@@ -104,7 +109,7 @@ snapshot.forEach(docSnap=>{
 
 const data=docSnap.data();
 
-if(data.date!==date) return;
+if(data.date!==currentDate) return;
 
 const id=docSnap.id;
 
@@ -145,9 +150,13 @@ window.deleteVideo = async function(id){
 
 await deleteDoc(doc(db,"videos",id));
 
-loadDates();
-
 }
 
 
-loadDates();
+onSnapshot(videosRef,(snapshot)=>{
+
+renderDates(snapshot);
+
+renderVideos(snapshot);
+
+});
