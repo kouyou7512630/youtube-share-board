@@ -1,5 +1,4 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-
 import {
 getFirestore,
 collection,
@@ -7,8 +6,7 @@ addDoc,
 deleteDoc,
 doc,
 onSnapshot
-}
-from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBONAWg79Un6Tag0vPP0PB0UiqJLL6KvtM",
@@ -21,23 +19,18 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-
 const videosRef = collection(db,"videos");
 
 let currentDate = null;
 
-
 window.addVideo = async function(){
-
 const url = document.getElementById("url").value;
 const comment = document.getElementById("comment").value;
 const date = document.getElementById("date").value;
 
 if(!url || !date){
-
 alert("日付とURLを入力してください");
 return;
-
 }
 
 await addDoc(videosRef,{
@@ -50,90 +43,55 @@ document.getElementById("url").value="";
 document.getElementById("comment").value="";
 }
 
-
 function renderDates(snapshot){
-
 const dates = new Set();
-
 snapshot.forEach(doc=>{
 dates.add(doc.data().date);
 });
-
 const list = document.getElementById("dateList");
-
 list.innerHTML="";
-
 dates.forEach(date=>{
-
 const div = document.createElement("div");
-
 div.className="dateItem";
-
 div.innerText=date;
-
 div.onclick=()=>{
 currentDate=date;
 renderVideos(snapshot);
 };
-
 list.appendChild(div);
-
 });
-
 }
 
-
 function renderVideos(snapshot){
-
 const list=document.getElementById("videoList");
-
 list.innerHTML="";
-
 snapshot.forEach(docSnap=>{
-
 const data=docSnap.data();
 const id=docSnap.id;
-
 if(currentDate && data.date!==currentDate) return;
 
 const div=document.createElement("div");
-
 div.className="videoCard";
 
 div.innerHTML=`
-
+<div class="videoInfo">
 <strong>📅 ${data.date}</strong>
-
-<div class="url">
-<a href="${data.url}" target="_blank">${data.url}</a>
+<div class="url">${data.url}</div>
+<div class="comment">${data.comment || ""}</div>
 </div>
-
-<p>${data.comment || ""}</p>
-
-<button class="delete" onclick="deleteVideo('${id}')">
-削除
-</button>
-
+<button class="delete" onclick="deleteVideo('${id}')">削除</button>
 `;
 
 list.appendChild(div);
-
 });
-
 }
-
 
 window.deleteVideo = async function(id){
-
 await deleteDoc(doc(db,"videos",id));
-
 }
 
-
+// リアルタイム更新
 onSnapshot(videosRef,(snapshot)=>{
-
 renderDates(snapshot);
-
 renderVideos(snapshot);
-
 });
