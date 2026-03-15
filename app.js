@@ -27,7 +27,7 @@ const db = getFirestore(app);
 const videosRef = collection(db,"videos");
 
 let currentDate = null;
-let sortableInitialized = false; // ★ SortableJS初期化用
+let sortableInitialized = false; 
 
 /* 投稿 */
 window.addVideo = async function(){
@@ -35,7 +35,6 @@ window.addVideo = async function(){
   const comment = document.getElementById("comment").value;
   const date = document.getElementById("date").value;
   if(!url || !date){alert("日付とURLを入力してください"); return;}
-  // Firestoreにorderを初期値0で保存
   await addDoc(videosRef,{url, comment, date, order: 0});
   document.getElementById("url").value="";
   document.getElementById("comment").value="";
@@ -70,7 +69,6 @@ function renderVideos(snapshot){
   list.innerHTML = "";
 
   const videos = snapshot.docs.map(docSnap => ({id: docSnap.id, ...docSnap.data()}));
-  // 並び順でソート
   videos.sort((a,b) => (a.order||0) - (b.order||0));
 
   videos.forEach(data => {
@@ -95,7 +93,6 @@ function renderVideos(snapshot){
     list.appendChild(div);
   });
 
-  // ★ SortableJS初回のみ初期化
   if(!sortableInitialized){
     new Sortable(list, {
       animation:150,
