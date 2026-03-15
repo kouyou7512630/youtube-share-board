@@ -1,150 +1,135 @@
-/* 背景 */
-body {
-  margin:0;
-  font-family:'Segoe UI', sans-serif;
-  background: linear-gradient(135deg, #dfe6ed, #f0f4f8);
-  color:#102a43;
+body{
+margin:0;
+font-family:'Segoe UI',sans-serif;
+background:linear-gradient(135deg,#dfe6ed,#f0f4f8);
+color:#102a43;
 }
 
-/* ヘッダー */
-header {
-  background: #334e68;
-  color: #ffffff;
-  text-align: center;
-  padding: 15px 20px;
-  border-bottom-left-radius: 15px;
-  border-bottom-right-radius: 15px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-}
-header h1 {
-  font-size: 2rem;
-  font-weight: bold;
-  margin:0;
+header{
+background:#334e68;
+color:#fff;
+text-align:center;
+padding:15px;
+border-bottom-left-radius:15px;
+border-bottom-right-radius:15px;
+box-shadow:0 4px 6px rgba(0,0,0,0.2);
 }
 
-/* バスケットボールアイコン */
-header i {
-  font-size: 1.5rem;
-  margin-left: 10px;
-  color: #ff6b35;  /* アイコンをオレンジ色に変更 */
+header h1{
+margin:0;
+font-size:2rem;
 }
 
-/* コンテナ */
-.container {
-  max-width: 1000px;
-  margin: auto;
-  padding: 20px;
+header i{
+color:#ff6b35;
+margin-left:10px;
 }
 
-/* 投稿フォーム */
-.controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-input {
-  padding: 12px;
-  font-size: 16px;
-  flex:1;
-  border-radius: 8px;
-  border: 1px solid #bcccdc;
-  background: #ffffff;
-  color: #102a43;
-  outline: none;
-  transition: 0.3s;
-}
-input:focus {
-  border-color: #627d98;
-  box-shadow: 0 0 5px #627d98;
-}
-button {
-  padding: 12px 20px;
-  background: #ff6b35;
-  color: #ffffff;
-  border: none;
-  cursor: pointer;
-  border-radius: 8px;
-  font-weight: bold;
-  transition: 0.3s;
-}
-button:hover {
-  background: #ff5020;
-  transform: translateY(-2px);
+.container{
+max-width:1000px;
+margin:auto;
+padding:20px;
 }
 
-/* カレンダー */
-#calendar {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 5px;
-  margin-bottom: 20px;
-}
-.calendar-day {
-  padding: 12px;
-  border-radius: 8px;
-  text-align: center;
-  cursor: pointer;
-  background: rgba(255,255,255,0.8);
-  transition: 0.2s;
-  color: #102a43;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-}
-.calendar-day.hasVideo { border: 2px solid #ff6b35; } 
-.calendar-day.active { background: #ffb86b; color: #102a43; font-weight: bold; }
-.calendar-day.today { background: #ffe5b4; color: #102a43; font-weight: bold; }
-.calendar-day:hover { background: #f5f5f5; }
-
-/* 動画カード */
-.videoCard {
-  background: #ffffff;
-  padding: 15px;
-  margin-bottom: 15px;
-  border-radius: 12px;
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-.videoCard:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 15px rgba(0,0,0,0.2);
-}
-.videoInfo { flex:1; margin-right:10px; }
-.url { color: #ff6b35; word-break: break-all; font-weight: bold; }
-.comment { color: #102a43; margin-top: 5px; }
-
-.delete, .edit, .save {
-  margin-left:5px;
-  background: #627d98;
-  color: #fff;
-  border:none;
-  padding:5px 10px;
-  cursor:pointer;
-  border-radius:6px;
-  transition:0.3s;
-}
-.delete:hover, .edit:hover, .save:hover {
-  background:#334e68;
-  transform: translateY(-1px);
+.controls{
+display:flex;
+flex-wrap:wrap;
+gap:10px;
+margin-bottom:20px;
 }
 
-/* レスポンシブ対応 */
-@media(max-width:600px) {
-  /* ヘッダー文字サイズをスマホ向けに縮小 */
-  header h1 {
-    font-size: 1.5rem;
-    padding: 10px 15px;
-  }
+input{
+padding:12px;
+font-size:16px;
+flex:1;
+border-radius:8px;
+border:1px solid #bcccdc;
+}
 
-  /* 投稿フォーム縦並び、幅100% */
-  .controls { 
-    flex-direction: column; 
-    gap: 8px;
-  }
-  .controls input, .controls button { 
-    width: 100%; 
-    box-sizing: border-box;
-  }
+button{
+padding:12px 20px;
+background:#ff6b35;
+color:white;
+border:none;
+border-radius:8px;
+cursor:pointer;
+}
+
+button:hover{
+background:#ff5020;
+}
+
+#calendar{
+display:grid;
+grid-template-columns:repeat(7,1fr);
+gap:5px;
+margin-bottom:20px;
+}
+
+.calendar-day{
+padding:12px;
+text-align:center;
+border-radius:8px;
+cursor:pointer;
+background:white;
+box-shadow:0 1px 3px rgba(0,0,0,0.2);
+}
+
+.calendar-day.hasVideo{
+border:2px solid #ff6b35;
+}
+
+.calendar-day.active{
+background:#ffb86b;
+font-weight:bold;
+}
+
+.videoCard{
+background:white;
+padding:15px;
+margin-bottom:15px;
+border-radius:12px;
+display:flex;
+justify-content:space-between;
+box-shadow:0 4px 10px rgba(0,0,0,0.1);
+}
+
+.videoInfo{
+flex:1;
+}
+
+.thumb{
+width:200px;
+border-radius:10px;
+margin-top:10px;
+}
+
+.comment{
+margin-top:5px;
+}
+
+.edit,.delete,.save{
+background:#627d98;
+color:white;
+border:none;
+padding:6px 10px;
+margin-left:5px;
+border-radius:6px;
+cursor:pointer;
+}
+
+@media(max-width:600px){
+
+.controls{
+flex-direction:column;
+}
+
+.videoCard{
+flex-direction:column;
+}
+
+.thumb{
+width:100%;
+}
+
 }
