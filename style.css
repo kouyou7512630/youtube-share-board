@@ -11,7 +11,6 @@ header{
   text-align:center;
   padding:20px;
 }
-
 header h1{
   display:flex;
   justify-content:center;
@@ -20,25 +19,14 @@ header h1{
   font-size:2rem;
   font-weight:bold;
 }
-
-/* ボールアニメーション */
 header i{
   color:#ff6b35;
   font-size:1.8rem;
   transition: transform 0.3s;
 }
-
-header i:hover{
-  transform: rotate(-20deg) scale(1.2);
-}
-
-header .text{
-  transition: transform 0.3s;
-}
-
-header .text:hover{
-  transform: translateY(-2px);
-}
+header i:hover{ transform: rotate(-20deg) scale(1.2);}
+header .text{ transition: transform 0.3s; }
+header .text:hover{ transform: translateY(-2px); }
 
 /* コンテナ */
 .container{
@@ -54,7 +42,6 @@ header .text:hover{
   gap:10px;
   margin-bottom:25px;
 }
-
 .controls input{
   flex:1;
   padding:12px;
@@ -62,7 +49,6 @@ header .text:hover{
   border:none;
   outline:none;
 }
-
 .controls button{
   padding:12px 20px;
   background:linear-gradient(45deg,#ff7a18,#ffb347);
@@ -72,10 +58,7 @@ header .text:hover{
   font-weight:bold;
   cursor:pointer;
 }
-
-.controls button:hover{
-  transform:scale(1.05);
-}
+.controls button:hover{ transform:scale(1.05); }
 
 /* カレンダー */
 #calendar{
@@ -83,8 +66,9 @@ header .text:hover{
   grid-template-columns:repeat(7,1fr);
   gap:6px;
   margin-bottom:20px;
+  overflow-x:auto;
+  padding-bottom:5px;
 }
-
 .calendar-day{
   background:rgba(255,255,255,0.1);
   backdrop-filter:blur(6px);
@@ -92,31 +76,36 @@ header .text:hover{
   border-radius:8px;
   text-align:center;
   cursor:pointer;
+  min-width:40px;
 }
-
-.calendar-day:hover{
-  background:rgba(255,255,255,0.25);
-}
-
-.calendar-day.hasVideo{
-  border:2px solid #ff7a18;
-}
-
-.calendar-day.active{
-  background:#ff7a18;
-}
+.calendar-day:hover{ background:rgba(255,255,255,0.25);}
+.calendar-day.hasVideo{ border:2px solid #ff7a18; }
+.calendar-day.active{ background:#ff7a18; }
 
 /* フィルター */
-.filterButtons{
+.filterButtons button{
+  background:#ff6b35;
+  border:none;
+  padding:8px 14px;
+  border-radius:6px;
+  color:white;
+  cursor:pointer;
+  transition: 0.2s;
+}
+.filterButtons button.active{
+  background:#ffb347;
+  transform: scale(1.05);
+}
+
+.viewButtons{
   display:flex;
   gap:10px;
   margin-bottom:15px;
 }
-
-.filterButtons button{
-  background:#ff7a18;
+.viewButtons button{
+  background:#ff6b35;
   border:none;
-  padding:8px 14px;
+  padding:6px 12px;
   border-radius:6px;
   color:white;
   cursor:pointer;
@@ -125,7 +114,7 @@ header .text:hover{
 /* 動画カード */
 .videoCard{
   display:flex;
-  align-items:center;
+  align-items:flex-start;
   justify-content:space-between;
   background:rgba(255,255,255,0.08);
   backdrop-filter:blur(8px);
@@ -133,11 +122,9 @@ header .text:hover{
   margin-bottom:14px;
   border-radius:14px;
   box-shadow:0 6px 15px rgba(0,0,0,0.4);
+  flex-wrap:wrap;
 }
-
-.videoCard:hover{
-  transform:translateY(-3px);
-}
+.videoCard:hover{ transform:translateY(-3px); }
 
 .dragHandle{
   cursor:grab;
@@ -145,42 +132,15 @@ header .text:hover{
   margin-right:12px;
   color:#ffb347;
 }
+.dragHandle:active{ cursor:grabbing; }
+.dragging{ opacity:0.6 !important; transform: scale(1.03);}
+.chosen{ transform: scale(1.05); box-shadow:0 15px 30px rgba(0,0,0,0.4); }
 
-.dragHandle:active{
-  cursor:grabbing;
-}
+.videoInfo{ flex:1; min-width:120px; }
+.url a{ color:#ffb347; font-weight:bold; word-break:break-all; }
+.comment{ margin-top:6px; color:#e0e0e0; }
 
-.dragging{
-  opacity:0.6 !important;
-  transform: scale(1.03);
-}
-
-.chosen{
-  transform: scale(1.05);
-  box-shadow:0 15px 30px rgba(0,0,0,0.4);
-}
-
-.videoInfo{
-  flex:1;
-}
-
-.url a{
-  color:#ffb347;
-  font-weight:bold;
-  text-decoration:none;
-  word-break:break-all;
-}
-
-.comment{
-  margin-top:6px;
-  color:#e0e0e0;
-}
-
-.buttons{
-  display:flex;
-  gap:6px;
-}
-
+.buttons{ display:flex; gap:6px; flex-wrap:wrap;}
 .edit,.delete,.save{
   background:#34495e;
   border:none;
@@ -189,25 +149,19 @@ header .text:hover{
   border-radius:6px;
   cursor:pointer;
 }
+.delete{ background:#c0392b; }
 
-.delete{
-  background:#c0392b;
+/* 予定表のバスケットボールアイコン */
+.videoCard ul li i.fas.fa-basketball-ball{
+  color:#ff6b35;
+  margin-right:8px;
 }
 
-/* スマホ */
+/* スマホ対応 */
 @media(max-width:700px){
-  .controls{
-    flex-direction:column;
-  }
-  .videoCard{
-    flex-direction:column;
-    align-items:flex-start;
-  }
-  .dragHandle{
-    font-size:30px;
-    margin-bottom:8px;
-  }
-  .buttons{
-    margin-top:10px;
-  }
+  .controls{ flex-direction:column; }
+  .videoCard{ flex-direction:column; align-items:flex-start; }
+  .dragHandle{ font-size:30px; margin-bottom:8px; }
+  .buttons{ margin-top:10px; }
+  #calendar{ grid-template-columns:repeat(auto-fit,minmax(40px,1fr)); overflow-x:auto;}
 }
