@@ -1,29 +1,46 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>YouTubeリンク管理</title>
-  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.7/index.global.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.7/index.global.min.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>YouTube Share Board</title>
+
+<link rel="stylesheet" href="style.css">
+
 </head>
+
 <body>
-  <h1>YouTubeリンク管理</h1>
-  <button id="loginBtn">Googleでログイン</button>
-  <div id="userInfo"></div>
 
-  <form id="addForm">
-    <input type="date" id="videoDate" required>
-    <input type="text" id="videoTitle" placeholder="動画タイトル" required>
-    <input type="url" id="videoUrl" placeholder="YouTubeリンク" required>
-    <button type="submit">追加</button>
-  </form>
+<header>
 
-  <div id="calendar"></div>
+<h1>🎬 YouTube Share Board</h1>
 
-  <script src="app.js"></script>
+</header>
+
+
+<div class="container">
+
+<div class="controls">
+
+<input type="date" id="date">
+
+<input type="text" id="url" placeholder="YouTube URL">
+
+<button onclick="addVideo()">追加</button>
+
+</div>
+
+
+<h2 id="selectedDate"></h2>
+
+<div id="videoList" class="grid"></div>
+
+</div>
+
+
+<script type="module" src="app.js"></script>
+
 </body>
 </html>
