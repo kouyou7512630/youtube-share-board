@@ -1,9 +1,8 @@
-/*https://kouyou7512630.github.io/youtube-share-board/*/
 /* 背景 */
 body {
   margin:0;
   font-family:'Segoe UI', sans-serif;
-  background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
+  background: linear-gradient(135deg, #dfe6ed, #f0f4f8);
   color:#102a43;
 }
 
@@ -13,11 +12,21 @@ header {
   color: #ffffff;
   text-align: center;
   padding: 15px 20px;
-  font-size: 2rem;
-  font-weight: bold;
   border-bottom-left-radius: 15px;
   border-bottom-right-radius: 15px;
   box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+}
+header h1 {
+  font-size: 2rem;
+  font-weight: bold;
+  margin:0;
+}
+
+/* バスケットボールアイコン */
+header i {
+  font-size: 1.5rem;
+  margin-left: 10px;
+  color: #ff6b35;  /* アイコンをオレンジ色に変更 */
 }
 
 /* コンテナ */
@@ -81,9 +90,9 @@ button:hover {
   color: #102a43;
   box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
-.calendar-day.hasVideo { border: 2px solid #ff6b35; }
+.calendar-day.hasVideo { border: 2px solid #ff6b35; } 
 .calendar-day.active { background: #ffb86b; color: #102a43; font-weight: bold; }
-.calendar-day.today { background: #ffe5b4; font-weight: bold; }
+.calendar-day.today { background: #ffe5b4; color: #102a43; font-weight: bold; }
 .calendar-day:hover { background: #f5f5f5; }
 
 /* 動画カード */
@@ -121,8 +130,21 @@ button:hover {
   transform: translateY(-1px);
 }
 
-/* レスポンシブ */
+/* レスポンシブ対応 */
 @media(max-width:600px) {
-  .controls { flex-direction: column; }
-  input, button { width: 100%; }
+  /* ヘッダー文字サイズをスマホ向けに縮小 */
+  header h1 {
+    font-size: 1.5rem;
+    padding: 10px 15px;
+  }
+
+  /* 投稿フォーム縦並び、幅100% */
+  .controls { 
+    flex-direction: column; 
+    gap: 8px;
+  }
+  .controls input, .controls button { 
+    width: 100%; 
+    box-sizing: border-box;
+  }
 }
