@@ -121,16 +121,18 @@ header .text:hover{
 }
 
 .filterButtons button{
-  background:#ff7a18;
+  background:#ff7a18;  /* 背景を統一 */
   border:none;
   padding:8px 14px;
   border-radius:6px;
   color:white;
   cursor:pointer;
+  box-shadow:none;
 }
 
-/* 選択中ボタンを下線と文字色で表示 */
+/* 選択中ボタンは背景は同じ、下線と文字色で判別 */
 .filterButtons button.active {
+  background:#ff7a18;
   border-bottom: 3px solid #ffd24d;
   font-weight: bold;
   color: #ffd24d;
