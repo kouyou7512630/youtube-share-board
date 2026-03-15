@@ -1,3 +1,4 @@
+/* 背景 */
 body{
   margin:0;
   font-family:'Segoe UI',sans-serif;
@@ -5,17 +6,41 @@ body{
   color:white;
 }
 
+/* ヘッダー */
 header{
   text-align:center;
   padding:20px;
-  font-size:24px;
+}
+
+header h1{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:12px;
+  font-size:2rem;
   font-weight:bold;
 }
 
+/* ボールアニメーション */
 header i{
-  color:#ff7a18;
+  color:#ff6b35;
+  font-size:1.8rem;
+  transition: transform 0.3s;
 }
 
+header i:hover{
+  transform: rotate(-20deg) scale(1.2);
+}
+
+header .text{
+  transition: transform 0.3s;
+}
+
+header .text:hover{
+  transform: translateY(-2px);
+}
+
+/* コンテナ */
 .container{
   max-width:1100px;
   margin:auto;
