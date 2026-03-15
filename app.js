@@ -24,14 +24,18 @@ const correctPassword = "54315";
 // ===== ログイン関数 =====
 function checkPassword() {
   const password = document.getElementById("passwordInput").value.trim();
+  console.log("入力されたパスワード: ", password); // パスワードが正しく取得されているか確認
+  
   if (password === correctPassword) {
-    // ログイン成功時、localStorage に情報を保存
+    // ログイン成功
+    console.log("ログイン成功");
     localStorage.setItem('loggedIn', 'true');
-    // ログイン画面を非表示にし、サイトコンテンツを表示
     document.getElementById("loginScreen").style.display = "none";
     document.getElementById("siteContent").style.display = "block";
     loadVideos();
   } else {
+    // パスワード失敗
+    console.log("パスワードが間違っています");
     alert("パスワードが間違っています。");
   }
 }
@@ -187,11 +191,14 @@ window.highlightCalendar = highlightCalendar;
 
 // ===== ページ読み込み時 =====
 document.addEventListener('DOMContentLoaded', () => {
+  console.log("ページが読み込まれました");
   if (localStorage.getItem('loggedIn') === 'true') {
+    console.log("ログイン状態: ログイン済み");
     document.getElementById("loginScreen").style.display = "none";
     document.getElementById("siteContent").style.display = "block";
     loadVideos();
   } else {
+    console.log("ログイン状態: 未ログイン");
     document.getElementById("loginScreen").style.display = "flex"; // flexにして中央表示
   }
 });
