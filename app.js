@@ -1,7 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc, deleteDoc, doc, updateDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-/* パスワード */
+/* パスワード保護 */
 window.onload = function(){
   const password = "54315";
   const userPass = prompt("サイト閲覧にはパスワードが必要です:");
@@ -10,7 +10,7 @@ window.onload = function(){
   }
 }
 
-/* Firebase */
+/* Firebase 初期化 */
 const firebaseConfig = {
   apiKey: "AIzaSyBONAWg79Un6Tag0vPP0PB0UiqJLL6KvtM",
   authDomain: "shareboard-ee031.firebaseapp.com",
@@ -23,6 +23,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const videosRef = collection(db,"videos");
 
+/* グローバル変数 */
 let currentDate = null;
 let filterMode = "all";
 let calendarYear = new Date().getFullYear();
@@ -134,53 +135,68 @@ window.nextMonth = function(){
   renderCalendar(lastSnapshot);
 }
 
-/* カレンダー */
+/* カレンダー表示 */
 function renderCalendar(snapshot){
   lastSnapshot = snapshot;
   const calendar = document.getElementById("calendar");
   calendar.innerHTML="";
 
+  // タイトル（月移動ボタン付き）
   const title = document.createElement("div");
   title.style.gridColumn="span 7";
   title.style.textAlign="center";
-  title.innerHTML=`<button onclick="prevMonth()">◀</button> ${calendarYear}年 ${calendarMonth+1}月 <button onclick="nextMonth()">▶</button>`;
+  title.style.marginBottom = "10px";
+  title.innerHTML = `
+    <button onclick="prevMonth()">◀</button>
+    <span style="margin: 0 12px; font-weight:bold;">${calendarYear}年 ${calendarMonth+1}月</span>
+    <button onclick="nextMonth()">▶</button>
+  `;
   calendar.appendChild(title);
 
+  // 曜日ヘッダー
   const week = ["日","月","火","水","木","金","土"];
   week.forEach(d=>{
     const w = document.createElement("div");
     w.innerText = d;
     w.style.textAlign="center";
+    w.style.fontWeight="bold";
     calendar.appendChild(w);
   });
 
   const firstDay = new Date(calendarYear,calendarMonth,1).getDay();
-  const days = new Date(calendarYear,calendarMonth+1,0).getDate();
+  const daysInMonth = new Date(calendarYear,calendarMonth+1,0).getDate();
 
-  for(let i=0;i<firstDay;i++){ calendar.appendChild(document.createElement("div")); }
+  // 空白セル
+  for(let i=0;i<firstDay;i++) calendar.appendChild(document.createElement("div"));
 
-  for(let d=1;d<=days;d++){
+  // 日付セル
+  for(let d=1; d<=daysInMonth; d++){
     const day = document.createElement("div");
     day.className="calendar-day";
+
     const dateStr = `${calendarYear}-${String(calendarMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
     day.innerText = d;
 
+    // 動画がある日をハイライト
     snapshot.forEach(doc=>{
-      if(doc.data().date===dateStr){ day.classList.add("hasVideo"); }
+      if(doc.data().date === dateStr){
+        day.classList.add("hasVideo");
+      }
     });
 
-    day.onclick = ()=>{
+    // 日付クリックで動画表示
+    day.onclick = () => {
       currentDate = dateStr;
-      filterMode="date";
+      filterMode = "date";
       renderVideos(snapshot);
-      document.getElementById("selectedDate").innerText = dateStr+" の動画";
+      document.getElementById("selectedDate").innerText = dateStr + " の動画";
     };
 
     calendar.appendChild(day);
   }
 }
 
-/* Firestoreリアルタイム */
+/* Firestoreリアルタイム監視 */
 const q = query(videosRef,orderBy("order","asc"));
 onSnapshot(q,(snapshot)=>{
   renderCalendar(snapshot);
