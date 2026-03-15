@@ -1,183 +1,188 @@
 body{
-margin:0;
-font-family:'Segoe UI',sans-serif;
-background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-color:white;
+  margin:0;
+  font-family:'Segoe UI',sans-serif;
+  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  color:white;
 }
 
 header{
-text-align:center;
-padding:20px;
-font-size:24px;
-font-weight:bold;
+  text-align:center;
+  padding:20px;
+  font-size:24px;
+  font-weight:bold;
 }
 
 header i{
-color:#ff7a18;
+  color:#ff7a18;
 }
 
 .container{
-max-width:1100px;
-margin:auto;
-padding:20px;
+  max-width:1100px;
+  margin:auto;
+  padding:20px;
 }
 
 /* 投稿フォーム */
-
 .controls{
-display:flex;
-flex-wrap:wrap;
-gap:10px;
-margin-bottom:25px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-bottom:25px;
 }
 
 .controls input{
-flex:1;
-padding:12px;
-border-radius:8px;
-border:none;
-outline:none;
+  flex:1;
+  padding:12px;
+  border-radius:8px;
+  border:none;
+  outline:none;
 }
 
 .controls button{
-padding:12px 20px;
-background:linear-gradient(45deg,#ff7a18,#ffb347);
-border:none;
-border-radius:8px;
-color:white;
-font-weight:bold;
-cursor:pointer;
+  padding:12px 20px;
+  background:linear-gradient(45deg,#ff7a18,#ffb347);
+  border:none;
+  border-radius:8px;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
 }
 
 .controls button:hover{
-transform:scale(1.05);
+  transform:scale(1.05);
 }
 
 /* カレンダー */
-
 #calendar{
-display:grid;
-grid-template-columns:repeat(7,1fr);
-gap:6px;
-margin-bottom:20px;
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:6px;
+  margin-bottom:20px;
 }
 
 .calendar-day{
-background:rgba(255,255,255,0.1);
-backdrop-filter:blur(6px);
-padding:12px;
-border-radius:8px;
-text-align:center;
-cursor:pointer;
+  background:rgba(255,255,255,0.1);
+  backdrop-filter:blur(6px);
+  padding:12px;
+  border-radius:8px;
+  text-align:center;
+  cursor:pointer;
 }
 
 .calendar-day:hover{
-background:rgba(255,255,255,0.25);
+  background:rgba(255,255,255,0.25);
 }
 
 .calendar-day.hasVideo{
-border:2px solid #ff7a18;
+  border:2px solid #ff7a18;
 }
 
 .calendar-day.active{
-background:#ff7a18;
+  background:#ff7a18;
 }
 
 /* フィルター */
-
 .filterButtons{
-display:flex;
-gap:10px;
-margin-bottom:15px;
+  display:flex;
+  gap:10px;
+  margin-bottom:15px;
 }
 
 .filterButtons button{
-background:#ff7a18;
-border:none;
-padding:8px 14px;
-border-radius:6px;
-color:white;
-cursor:pointer;
+  background:#ff7a18;
+  border:none;
+  padding:8px 14px;
+  border-radius:6px;
+  color:white;
+  cursor:pointer;
 }
 
 /* 動画カード */
-
 .videoCard{
-display:flex;
-align-items:center;
-justify-content:space-between;
-background:rgba(255,255,255,0.08);
-backdrop-filter:blur(8px);
-padding:16px;
-margin-bottom:14px;
-border-radius:14px;
-box-shadow:0 6px 15px rgba(0,0,0,0.4);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  background:rgba(255,255,255,0.08);
+  backdrop-filter:blur(8px);
+  padding:16px;
+  margin-bottom:14px;
+  border-radius:14px;
+  box-shadow:0 6px 15px rgba(0,0,0,0.4);
 }
 
 .videoCard:hover{
-transform:translateY(-3px);
+  transform:translateY(-3px);
 }
 
 .dragHandle{
-cursor:grab;
-font-size:22px;
-margin-right:12px;
-color:#ffb347;
+  cursor:grab;
+  font-size:26px;
+  margin-right:12px;
+  color:#ffb347;
 }
 
 .dragHandle:active{
-cursor:grabbing;
+  cursor:grabbing;
+}
+
+.dragging{
+  opacity:0.6 !important;
+  transform: scale(1.03);
+}
+
+.chosen{
+  transform: scale(1.05);
+  box-shadow:0 15px 30px rgba(0,0,0,0.4);
 }
 
 .videoInfo{
-flex:1;
+  flex:1;
 }
 
 .url a{
-color:#ffb347;
-font-weight:bold;
-text-decoration:none;
-word-break:break-all;
+  color:#ffb347;
+  font-weight:bold;
+  text-decoration:none;
+  word-break:break-all;
 }
 
 .comment{
-margin-top:6px;
-color:#e0e0e0;
+  margin-top:6px;
+  color:#e0e0e0;
 }
 
 .buttons{
-display:flex;
-gap:6px;
+  display:flex;
+  gap:6px;
 }
 
 .edit,.delete,.save{
-background:#34495e;
-border:none;
-color:white;
-padding:6px 10px;
-border-radius:6px;
-cursor:pointer;
+  background:#34495e;
+  border:none;
+  color:white;
+  padding:6px 10px;
+  border-radius:6px;
+  cursor:pointer;
 }
 
 .delete{
-background:#c0392b;
+  background:#c0392b;
 }
 
 /* スマホ */
-
 @media(max-width:700px){
-
-.controls{
-flex-direction:column;
-}
-
-.videoCard{
-flex-direction:column;
-align-items:flex-start;
-}
-
-.buttons{
-margin-top:10px;
-}
-
+  .controls{
+    flex-direction:column;
+  }
+  .videoCard{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+  .dragHandle{
+    font-size:30px;
+    margin-bottom:8px;
+  }
+  .buttons{
+    margin-top:10px;
+  }
 }
